@@ -1,25 +1,12 @@
-class Snake:
-    def __init__(self, init_body, init_direction):
-        self.body = init_body
-        self.direction = init_direction
-  
-    def take_step(self, position):
-        self.body = self.body[1:] + [position]
-    
-    def set_direction(self, direction):
-        self.direction = direction
-
-    def head(self, ):
-        return self.body[-1]
-  
-
-class Apple: 
-    ...
+from helpers.snake import Snake
+import datetime
+import os
 
 class Game:
     def __init__(self, height, width): 
         self.height: int = height
         self.width: int = width
+        self.snake = Snake([(1, 1), (1, 3), (2, 1), (3, 1)], "UP")
 
     def board(self):
         """Create list that represents the board of the game"""
@@ -27,7 +14,8 @@ class Game:
         board = []
         for i in range(self.height):
             for j in range(self.width):
-                # For edges +
+                
+                    # For edges +
                 if ((i == 0 and j == 0) or 
                     (i == 0 and j == (self.width - 1)) or
                     (i == (self.height - 1) and j == 0) or
@@ -49,21 +37,29 @@ class Game:
         return board
 
     def render(self):
-        print("Height:", self.height)
-        print("Width:", self.width)
-
+        print(self.snake.body)
         # Show game Board
         board = self.board()
         for i in range(self.height):
             for j in range(self.width):
+                if (i, j) == self.snake.head():
+                    print("o",end="")
+                    continue
+                    
+                if (i, j) in self.snake.body and (i, j) != self.snake.head(): 
+                    print("x",end="")
+                    continue
+
                 print(board[(i * self.width) + j], end="")
                 if j == self.width-1: print()
-
         
+        lastTimeRendered = datetime.datetime.now()
+        
+        self.snake.move()
+        while True:
+            if ((lastTimeRendered + datetime.timedelta(0,1)) < datetime.datetime.now()):
+                os.system("clear")
+                self.render()
+                break
+            
 
-                    
-                
-
-  
-game = Game(10, 20)
-game.render()
