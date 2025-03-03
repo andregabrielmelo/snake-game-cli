@@ -1,51 +1,33 @@
+import curses
+
+KEY_ENTER = 10
+
 class Menu:
-    def __init__(self):
+    def __init__(self, height, width):
         self.playing = False
-        self.menu()
-
-    def menu(self):
-        self.displayMenu()
-        choice: int = int(self.promptOption())
-
-        match choice:
-            case 1:
-                self.startGame()
-            case 2:
-                self.showInstructions()
-            case 3:
-                print("Goodbye!")
-                return
-            case _:
-                print("Invalid option, try again.")
-                self.menu()
-
+        self.height = height
+        self.width = width
         
-    def displayMenu(self) -> str:
+    def displayMenu(self, stdscr) -> str:
         """Return menu options"""
 
-        menu = "1. Start Game\n2. Instructions\n3. Quit"
-        print(menu)
-        return menu
-    
-    def promptOption(self, question="Option: ") -> any:
-        while True:
-            try:
-                return input(f"{question}")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
-    
-    def startGame(self):
-        """Start the game"""
+        options = ["1. Start Game", "2. Instructions", "3. Quit"]
 
-        self.playing = True
+        stdscr.addstr(int(self.height/2-self.height*0.1), int(self.width/2), "SNAKE GAME", curses.A_STANDOUT) # display game title
 
-    def showInstructions(self):
-        instructions = "Eat. Grow. Repeat."
-        print(instructions)
+        for i in range(len(options)):
+            stdscr.addstr(int(self.height/2+self.height*i/10), int(self.width/2), options[i])
 
-        while(self.promptOption("Click enter to return to menu...") != ""):
-            continue
+        return
+
+    def showInstructions(self, stdscr):
+
+        stdscr.addstr(int(self.height/2-self.height*0.1), int(self.width/2), "Eat. Grow. Repeat.", curses.A_BOLD)
+        stdscr.addstr(int(self.height/2), int(self.width/2), "Press enter to go the the menu...")
         
-        self.menu()
-
-
+        choice = stdscr.getch()
+        while(choice != KEY_ENTER):
+            stdscr.addstr(int(self.height*0.9), int(self.width/2), "Press enter?", curses.A_UNDERLINE)
+            choice = stdscr.getch()
+        else:
+            return

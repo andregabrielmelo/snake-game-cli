@@ -1,14 +1,38 @@
 from helpers.game import Game
 from helpers.menu import Menu
-import os
+import curses, time
 
-def main(): 
-    menu = Menu()
-    if (menu.playing):
-        os.system('clear')
-        game = Game(10, 20)
-        game.render()
-        
+def main(stdscr): 
+    clear_screen(stdscr)
+
+    height,width = stdscr.getmaxyx()
+
+    menu = Menu(height, width)
+    game = Game(height, width)
+
+    while True:
+        menu.displayMenu(stdscr)
+        choice = stdscr.getch()
+        if choice == ord("1"):
+            stdscr.addstr(int(height*0.9), int(width/2), str(choice), curses.A_UNDERLINE) # display game title
+            clear_screen(stdscr)
+            stdscr.refresh()
+            game.render(stdscr)
+        elif choice == ord("2"):
+            clear_screen(stdscr)
+            stdscr.refresh()
+            menu.showInstructions(stdscr)
+            clear_screen(stdscr)
+        elif choice == ord("3"):
+            break
+        else:
+            stdscr.addstr(int(height*0.9), int(width/2), "Choose a valid option!", curses.A_UNDERLINE) # display game title
+
+
+def clear_screen(stdscr):
+    stdscr.clear()
+
+
 
 if __name__ == "__main__":
-    main()
+    curses.wrapper(main)
