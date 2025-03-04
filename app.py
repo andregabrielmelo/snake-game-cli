@@ -12,6 +12,7 @@ def main(stdscr):
 
     while True:
         menu.displayMenu(stdscr)
+        stdscr.addstr(int(height*0.9), int(width/2), "Choose a option!", curses.A_BOLD) # display game title
         choice = stdscr.getch()
         if choice == ord("1"):
             stdscr.addstr(int(height*0.9), int(width/2), str(choice), curses.A_UNDERLINE) # display game title
