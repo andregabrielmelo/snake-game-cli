@@ -1,8 +1,13 @@
 from helpers.game import Game
 from helpers.menu import Menu
-import curses, time
+from helpers.functions import clear_screen
+import curses
 
-def main(stdscr): 
+KEY_1 = ord("1")
+KEY_2 = ord("2")
+KEY_3 = ord("3")
+
+def main(stdscr: curses.window): 
     clear_screen(stdscr)
 
     height,width = stdscr.getmaxyx()
@@ -14,27 +19,18 @@ def main(stdscr):
         menu.displayMenu()
         curses.curs_set(0)  # Hide cursor
 
-        choice = stdscr.getch()
-        if choice == ord("1"):
-            stdscr.addstr(int(height*0.9), int(width/2), str(choice), curses.A_UNDERLINE) # display game title
-            clear_screen(stdscr)
-            stdscr.refresh()
+        choice = stdscr.getch()  # Get user input
+        if choice == KEY_1:
             game.render(stdscr)
-
-        elif choice == ord("2"):
+        elif choice == KEY_2:
             clear_screen(stdscr)
             stdscr.refresh()
             menu.showInstructions(stdscr)
             clear_screen(stdscr)
-        elif choice == ord("3"):
+        elif choice == KEY_3:
             break
         else:
-            stdscr.addstr(int(height*0.9), int(width/2), "Choose a valid option!", curses.A_UNDERLINE) # display game title
-
-
-def clear_screen(stdscr):
-    stdscr.clear()
-
+            stdscr.addstr(int(height * 0.9), int(width / 2), "Choose a valid option!", curses.A_UNDERLINE)
 
 
 if __name__ == "__main__":

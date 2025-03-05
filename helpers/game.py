@@ -1,47 +1,62 @@
 from helpers.snake import Snake
 from helpers.apple import Apple
-import os, random, datetime, curses
+import curses
 
 class Game:
-    def __init__(self, height, width, stdscr): 
-        self.terminal_height: int = height
-        self.terminal_width: int = width
+    def __init__(self, terminal_height, terminal_width, stdscr): 
+        self.terminal_height: int = terminal_height
+        self.terminal_width: int = terminal_width
         self.stdscr = stdscr
         self.score = 0
-        self.snake = Snake(height, width, stdscr)
-        self.apple = Apple(height, width, stdscr)
+        self.snake = Snake(stdscr,  terminal_height*0.25,  terminal_height*0.75, terminal_width*0.25, terminal_width*0.75)
+        self.apple = Apple(stdscr, terminal_height*0.25,  terminal_height*0.75, terminal_width*0.25, terminal_width*0.75)
     
-    def display_board(self, stdscr):
+    def display_board(self):
         """Function that displays the board of the game"""
 
         for y in range(int(self.terminal_height*0.25), int(self.terminal_height*0.75)):
             for x in range(int(self.terminal_width*0.25), int(self.terminal_width*0.75)):
                 # Fill top left edge
                 if y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.25):
-                        stdscr.addstr(y,x,"┌ ")
+                        self.stdscr.addstr(y,x,"┌ ")
                 
                 # Fill top right edge
                 elif y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.75)-1:
-                        stdscr.addstr(y,x,"┐")
+                        self.stdscr.addstr(y,x,"┐")
 
                 # Fill bottom left edge
                 elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.25):
-                        stdscr.addstr(y,x,"└")
+                        self.stdscr.addstr(y,x,"└")
 
                 # Fill bottom right edge
                 elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.75)-1:
-                        stdscr.addstr(y,x,"┘")
+                        self.stdscr.addstr(y,x,"┘")
                 
                 # Fill top and bottom
                 elif y == int(self.terminal_height*0.25) or y == int(self.terminal_height*0.75)-1:
-                        stdscr.addstr(y,x,"─")
+                        self.stdscr.addstr(y,x,"─")
 
                 # Fill left and right
                 elif x == int(self.terminal_width*0.25) or x == int(self.terminal_width*0.75)-1:
-                    stdscr.addstr(y,x,"│")
+                    self.stdscr.addstr(y,x,"│")
 
     def display_score(self):
         self.stdscr.addstr(int(self.terminal_height*0.9),int(self.terminal_width*0.25), f"Score: {self.score}")
+
+    def handle_user_input(self, key: int) -> bool:
+        """Handle movement keys"""
+         
+        if key == curses.KEY_UP and self.snake.direction != "DOWN":
+            self.snake.set_direction("UP")
+        elif key == curses.KEY_DOWN and self.snake.direction != "UP":
+            self.snake.set_direction("DOWN")
+        elif key == curses.KEY_LEFT and self.snake.direction != "RIGHT":
+            self.snake.set_direction("LEFT")
+        elif key == curses.KEY_RIGHT and self.snake.direction != "LEFT":
+            self.snake.set_direction("RIGHT")
+        elif key == ord("q"):  # Press 'q' to quit
+            self.playing = False
+            self.stdscr.clear()
                         
     def valid_position(self):
         """Verify if the snake is in a valid position"""
@@ -53,11 +68,12 @@ class Game:
                     print("Game over!")
                     return
                 
-    def eat_apple(self):
-        if (self.apple.x, self.apple.y) in self.snake.body:
-            self.apple.x, self.apple.y = self.apple.create_apple()
-            self.score +=1
-            self.apple.counter -=1
+    def eat_apple(self) -> bool:
+        if self.snake.head() == self.apple.position():
+            self.score += 1
+            self.apple.counter -= 1
+            self.apple.generate()
+            self.snake.grow()
             return True
         
         return False
@@ -69,37 +85,17 @@ class Game:
         curses.curs_set(0)  # Hide cursor
 
         while self.playing:
-            stdscr.clear()  # Clear screen before drawing
-            self.display_board(stdscr)  # Draw the board
+            stdscr.clear()  
+            self.display_board()  
             self.display_score()
-            self.stdscr.addstr(int(self.terminal_height*0.9),int(self.terminal_width*0.3), "Quit by pressing q", curses.A_BOLD)
-            self.snake.display()  # Draw the snake
-            if not (self.apple.counter > 0):
-                self.apple.x, self.apple.y = self.apple.create_apple()
-                self.apple.counter += 1
-
-            self.apple.display_apple(self.apple.x, self.apple.y)
+            self.snake.generate()  
+            self.apple.generate()
 
             key = stdscr.getch()  # Get user input
-
-            # Handle movement keys
-            if key == curses.KEY_UP and self.snake.direction != "DOWN":
-                self.snake.set_direction("UP")
-            elif key == curses.KEY_DOWN and self.snake.direction != "UP":
-                self.snake.set_direction("DOWN")
-            elif key == curses.KEY_LEFT and self.snake.direction != "RIGHT":
-                self.snake.set_direction("LEFT")
-            elif key == curses.KEY_RIGHT and self.snake.direction != "LEFT":
-                self.snake.set_direction("RIGHT")
-            elif key == ord("q"):  # Press 'q' to quit
-                self.playing = False
-                self.stdscr.clear()
-                break
-
+            self.handle_user_input(key) # handle user input
+            
+            self.eat_apple()
             self.snake.move()  # Move the snake
-            if self.eat_apple():
-                 self.snake.grow() 
-            self.valid_position()  # Check collisions
 
             stdscr.refresh()  # Refresh screen
             curses.napms(100)  # Delay to slow down animation

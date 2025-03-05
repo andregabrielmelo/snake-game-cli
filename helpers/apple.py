@@ -1,25 +1,28 @@
 import random, curses
 
 class Apple: 
-    def __init__(self, board_height, board_width, stdscr):
+    def __init__(self, stdscr: curses.window, board_height_start: int, board_height_end: int, board_width_start: int, board_width_end: int):
         self.stdscr: curses.window = stdscr
-        self.board_height: int = board_height
-        self.board_width: int = board_width
+        self.board_height_start: int = int(board_height_start)
+        self.board_height_end: int = int(board_height_end)
+        self.board_width_start: int = int(board_width_start)
+        self.board_width_end: int = int(board_width_end)
+        self.x = 0
+        self.y = 0
         self.counter: int = 0
 
-    def create_apple(self) -> tuple:
+    def generate(self) -> bool:
         """Generate a apple randomly in the field"""
+        if self.counter > 0:
+            self.stdscr.addstr(self.y, self.x, "$")
+            return False
 
-        # Pick random x point
-        x: int = random.randint(int(self.board_width*0.25)+2, int(self.board_width*0.75)-2)
+        self.x: int = random.randint(self.board_width_start+2, self.board_width_end-2)
+        self.y: int = random.randint(self.board_height_start+2, self.board_height_end-2)       
+        self.counter += 1
 
-        # Pick random y
-        y: int = random.randint(int(self.board_height*0.25)+2,int(self.board_height*0.75)-2)
-
-        return (x, y)
-    
-    def display_apple(self, x, y) -> bool:
-        self.stdscr.addstr(y, x, "$")
         return True
 
+    def position(self) -> tuple[int, int]:
+        return (self.x, self.y)
 

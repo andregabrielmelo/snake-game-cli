@@ -1,13 +1,13 @@
 import curses
+from helpers.functions import prompt_user
 
 KEY_ENTER = 10
 
 class Menu:
     def __init__(self, terminal_height, terminal_width, stdscr):
-        self.playing = False
+        self.stdscr = stdscr
         self.terminal_height = terminal_height
         self.terminal_width = terminal_width
-        self.stdscr = stdscr
         
     def displayMenu(self) -> None:
         """Show menu items"""
@@ -33,7 +33,7 @@ class Menu:
 
         # display menu itmes
         for i in range(len(menu_items)):
-            self.stdscr.addstr(int(self.terminal_height/2+self.terminal_height*i/10), int(self.terminal_width/2), menu_items[i]["display"], menu_items[i]["option"])
+            self.stdscr.addstr(int(self.terminal_height*0.2+self.terminal_height*i/10), int(self.terminal_width/2), menu_items[i]["display"], menu_items[i]["option"])
 
     def showInstructions(self, stdscr) -> None:
         """Show instructions items"""
@@ -52,7 +52,4 @@ class Menu:
         for i in range(len(instruction_items)):
             self.stdscr.addstr(int(self.terminal_height/2+self.terminal_height*i/10), int(self.terminal_width/2), instruction_items[i]["display"], instruction_items[i]["option"])
         
-        choice = stdscr.getch()
-        while(choice != KEY_ENTER):
-            stdscr.addstr(int(self.terminal_height*0.9), int(self.terminal_width/2), "Press enter?", curses.A_UNDERLINE)
-            choice = stdscr.getch()
+        prompt_user(self.stdscr, int(self.terminal_height*0.8), int(self.terminal_width/2), "Press enter?", KEY_ENTER)
