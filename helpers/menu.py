@@ -3,31 +3,56 @@ import curses
 KEY_ENTER = 10
 
 class Menu:
-    def __init__(self, height, width):
+    def __init__(self, terminal_height, terminal_width, stdscr):
         self.playing = False
-        self.height = height
-        self.width = width
+        self.terminal_height = terminal_height
+        self.terminal_width = terminal_width
+        self.stdscr = stdscr
         
-    def displayMenu(self, stdscr) -> str:
-        """Return menu options"""
+    def displayMenu(self) -> None:
+        """Show menu items"""
 
-        options = ["1. Start Game", "2. Instructions", "3. Quit"]
+        menu_items: list[dict] = [
+            {
+                "display": "SNAKE GAME",
+                "option": curses.A_STANDOUT, 
+            },
+            {
+                "display": "1. Start Game",
+                "option": curses.A_NORMAL,
+            }, 
+            {
+                "display": "2. Instructions",
+                "option": curses.A_NORMAL,
+            }, 
+            {
+                "display": "3. Quit",
+                "option": curses.A_NORMAL,
+            },
+        ]
 
-        stdscr.addstr(int(self.height/2-self.height*0.1), int(self.width/2), "SNAKE GAME", curses.A_STANDOUT) # display game title
+        # display menu itmes
+        for i in range(len(menu_items)):
+            self.stdscr.addstr(int(self.terminal_height/2+self.terminal_height*i/10), int(self.terminal_width/2), menu_items[i]["display"], menu_items[i]["option"])
 
-        for i in range(len(options)):
-            stdscr.addstr(int(self.height/2+self.height*i/10), int(self.width/2), options[i])
+    def showInstructions(self, stdscr) -> None:
+        """Show instructions items"""
 
-        return
+        instruction_items: list[dict] = [
+            {
+                "display": "Eat. Grow. Repeat.",
+                "option": curses.A_BOLD, 
+            },
+            {
+                "display": "Press enter to go the the menu...",
+                "option": curses.A_NORMAL,
+            }, 
+        ]
 
-    def showInstructions(self, stdscr):
-
-        stdscr.addstr(int(self.height/2-self.height*0.1), int(self.width/2), "Eat. Grow. Repeat.", curses.A_BOLD)
-        stdscr.addstr(int(self.height/2), int(self.width/2), "Press enter to go the the menu...")
+        for i in range(len(instruction_items)):
+            self.stdscr.addstr(int(self.terminal_height/2+self.terminal_height*i/10), int(self.terminal_width/2), instruction_items[i]["display"], instruction_items[i]["option"])
         
         choice = stdscr.getch()
         while(choice != KEY_ENTER):
-            stdscr.addstr(int(self.height*0.9), int(self.width/2), "Press enter?", curses.A_UNDERLINE)
+            stdscr.addstr(int(self.terminal_height*0.9), int(self.terminal_width/2), "Press enter?", curses.A_UNDERLINE)
             choice = stdscr.getch()
-        else:
-            return

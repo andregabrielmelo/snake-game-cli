@@ -1,41 +1,48 @@
 from helpers.snake import Snake
+from helpers.apple import Apple
 import os, random, datetime, curses
 
 class Game:
-    def __init__(self, height, width): 
-        self.height: int = height
-        self.width: int = width
-        self.snake = Snake(self.height, self.width)
+    def __init__(self, height, width, stdscr): 
+        self.terminal_height: int = height
+        self.terminal_width: int = width
+        self.stdscr = stdscr
+        self.score = 0
+        self.snake = Snake(height, width, stdscr)
+        self.apple = Apple(height, width, stdscr)
     
     def display_board(self, stdscr):
         """Function that displays the board of the game"""
 
-        for y in range(int(self.height*0.25), int(self.height*0.75)):
-            for x in range(int(self.width*0.25), int(self.width*0.75)):
+        for y in range(int(self.terminal_height*0.25), int(self.terminal_height*0.75)):
+            for x in range(int(self.terminal_width*0.25), int(self.terminal_width*0.75)):
                 # Fill top left edge
-                if y == int(self.height*0.25) and x == int(self.width*0.25):
+                if y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.25):
                         stdscr.addstr(y,x,"┌ ")
                 
                 # Fill top right edge
-                elif y == int(self.height*0.25) and x == int(self.width*0.75)-1:
+                elif y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.75)-1:
                         stdscr.addstr(y,x,"┐")
 
                 # Fill bottom left edge
-                elif y == int(self.height*0.75)-1 and x == int(self.width*0.25):
+                elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.25):
                         stdscr.addstr(y,x,"└")
 
                 # Fill bottom right edge
-                elif y == int(self.height*0.75)-1 and x == int(self.width*0.75)-1:
+                elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.75)-1:
                         stdscr.addstr(y,x,"┘")
                 
                 # Fill top and bottom
-                elif y == int(self.height*0.25) or y == int(self.height*0.75)-1:
+                elif y == int(self.terminal_height*0.25) or y == int(self.terminal_height*0.75)-1:
                         stdscr.addstr(y,x,"─")
 
                 # Fill left and right
-                elif x == int(self.width*0.25) or x == int(self.width*0.75)-1:
+                elif x == int(self.terminal_width*0.25) or x == int(self.terminal_width*0.75)-1:
                     stdscr.addstr(y,x,"│")
-                    
+
+    def display_score(self):
+        self.stdscr.addstr(int(self.terminal_height*0.9),int(self.terminal_width*0.25), f"Score: {self.score}")
+                        
     def valid_position(self):
         """Verify if the snake is in a valid position"""
 
@@ -45,6 +52,15 @@ class Game:
                     self.playing = False
                     print("Game over!")
                     return
+                
+    def eat_apple(self):
+        if (self.apple.x, self.apple.y) in self.snake.body:
+            self.apple.x, self.apple.y = self.apple.create_apple()
+            self.score +=1
+            self.apple.counter -=1
+            return True
+        
+        return False
 
     def render(self, stdscr):
         self.playing = True
@@ -55,7 +71,14 @@ class Game:
         while self.playing:
             stdscr.clear()  # Clear screen before drawing
             self.display_board(stdscr)  # Draw the board
-            self.snake.display(stdscr)  # Draw the snake
+            self.display_score()
+            self.stdscr.addstr(int(self.terminal_height*0.9),int(self.terminal_width*0.3), "Quit by pressing q", curses.A_BOLD)
+            self.snake.display()  # Draw the snake
+            if not (self.apple.counter > 0):
+                self.apple.x, self.apple.y = self.apple.create_apple()
+                self.apple.counter += 1
+
+            self.apple.display_apple(self.apple.x, self.apple.y)
 
             key = stdscr.getch()  # Get user input
 
@@ -70,9 +93,12 @@ class Game:
                 self.snake.set_direction("RIGHT")
             elif key == ord("q"):  # Press 'q' to quit
                 self.playing = False
+                self.stdscr.clear()
                 break
 
             self.snake.move()  # Move the snake
+            if self.eat_apple():
+                 self.snake.grow() 
             self.valid_position()  # Check collisions
 
             stdscr.refresh()  # Refresh screen
