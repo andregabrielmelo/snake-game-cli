@@ -6,6 +6,10 @@ class Game:
     def __init__(self, terminal_height, terminal_width, stdscr): 
         self.terminal_height: int = terminal_height
         self.terminal_width: int = terminal_width
+        self.board_height_start: int = int(terminal_height*0.25)
+        self.board_height_end: int = int(terminal_height*0.75)
+        self.board_width_start: int = int(terminal_width*0.25)
+        self.board_width_end: int = int(terminal_width*0.75)
         self.stdscr = stdscr
         self.score = 0
         self.snake = Snake(stdscr,  terminal_height*0.25,  terminal_height*0.75, terminal_width*0.25, terminal_width*0.75)
@@ -14,34 +18,34 @@ class Game:
     def display_board(self):
         """Function that displays the board of the game"""
 
-        for y in range(int(self.terminal_height*0.25), int(self.terminal_height*0.75)):
-            for x in range(int(self.terminal_width*0.25), int(self.terminal_width*0.75)):
+        for y in range(self.board_height_start, self.board_height_end):
+            for x in range(self.board_width_start, self.board_width_end):
                 # Fill top left edge
-                if y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.25):
+                if y == self.board_height_start and x == self.board_width_start:
                         self.stdscr.addstr(y,x,"┌ ")
                 
                 # Fill top right edge
-                elif y == int(self.terminal_height*0.25) and x == int(self.terminal_width*0.75)-1:
+                elif y == self.board_height_start and x == self.board_width_end-1:
                         self.stdscr.addstr(y,x,"┐")
 
                 # Fill bottom left edge
-                elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.25):
+                elif y == self.board_height_end-1 and x == self.board_width_start:
                         self.stdscr.addstr(y,x,"└")
 
                 # Fill bottom right edge
-                elif y == int(self.terminal_height*0.75)-1 and x == int(self.terminal_width*0.75)-1:
+                elif y == self.board_height_end-1 and x == self.board_width_end-1:
                         self.stdscr.addstr(y,x,"┘")
                 
                 # Fill top and bottom
-                elif y == int(self.terminal_height*0.25) or y == int(self.terminal_height*0.75)-1:
+                elif y == self.board_height_start or y == self.board_height_end-1:
                         self.stdscr.addstr(y,x,"─")
 
                 # Fill left and right
-                elif x == int(self.terminal_width*0.25) or x == int(self.terminal_width*0.75)-1:
+                elif x == self.board_width_start or x == self.board_width_end-1:
                     self.stdscr.addstr(y,x,"│")
 
     def display_score(self):
-        self.stdscr.addstr(int(self.terminal_height*0.9),int(self.terminal_width*0.25), f"Score: {self.score}")
+        self.stdscr.addstr(int(self.terminal_height*0.9),self.board_width_start, f"Score: {self.score}")
 
     def handle_user_input(self, key: int) -> bool:
         """Handle movement keys"""
