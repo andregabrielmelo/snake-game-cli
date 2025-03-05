@@ -33,7 +33,7 @@ class Menu:
 
         # display menu itmes
         for i in range(len(menu_items)):
-            self.stdscr.addstr(int(self.terminal_height*0.2+self.terminal_height*i/10), int(self.terminal_width/2), menu_items[i]["display"], menu_items[i]["option"])
+            self.stdscr.addstr(int(self.terminal_height*0.2+self.terminal_height*i/10), int(self.terminal_width*0.85), menu_items[i]["display"], menu_items[i]["option"])
 
     def showInstructions(self, stdscr) -> None:
         """Show instructions items"""

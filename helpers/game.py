@@ -46,7 +46,6 @@ class Game:
 
     def display_score(self):
         self.stdscr.addstr(self.board_height_start,int(self.board_width_end*1.05), f"Score: {self.score}")
-        ...
 
     def handle_user_input(self, key: int) -> bool:
         """Handle movement keys"""
@@ -66,14 +65,24 @@ class Game:
     def snake_collision(self):
         """Verify if the snake is in a valid position"""
 
-        for i in range(len(self.snake.body)):
-            for j in range(i+1, len(self.snake.body)):
-                if self.snake.body[i] == self.snake.body[j]:
-                    self.playing = False
-                    self.stdscr.clear()
-                    self.stdscr.addstr(int(self.terminal_height * 0.9), int(self.terminal_width / 2), "You Lost!", curses.A_UNDERLINE)
+        if self.snake.head() in [part["position"] for part in self.snake.body[:-1]]:
+            self.playing = False
 
-                    return True
+            # Highlight the collision point
+            self.stdscr.attron(curses.color_pair(2))  # Enable color (define it in init)
+            self.stdscr.addstr(self.snake.head()[1], self.snake.head()[0], "X")  # Mark collision
+            self.stdscr.attroff(curses.color_pair(2))  # Disable color
+            self.stdscr.refresh()
+
+            curses.napms(500)  # Pause for 500ms to show collision
+            
+            # Display Game Over message
+            self.stdscr.addstr(int(self.terminal_height/2), int(self.terminal_width / 2), "You Lost!", curses.A_UNDERLINE)
+            self.stdscr.refresh()
+
+            curses.napms(1500)  # Pause before restart
+            return True
+
                 
     def eat_apple(self) -> bool:
         if self.snake.head() == self.apple.position():
