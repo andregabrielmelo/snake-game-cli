@@ -3,14 +3,14 @@ from helpers.apple import Apple
 import curses
 
 class Game:
-    def __init__(self, terminal_height, terminal_width, stdscr): 
+    def __init__(self, terminal_height, terminal_width, stdscr: curses.window): 
         self.terminal_height: int = terminal_height
         self.terminal_width: int = terminal_width
         self.board_height_start: int = 1
         self.board_height_end: int = int(terminal_height)-1
         self.board_width_start: int = 1
         self.board_width_end: int = int(terminal_width*0.8)
-        self.stdscr = stdscr
+        self.stdscr: curses.window = stdscr
         self.score = 0
         self.snake = Snake(stdscr,  self.board_height_start,  self.board_height_end, self.board_width_start, self.board_width_end)
         self.apple = Apple(stdscr, self.board_height_start,  self.board_height_end, self.board_width_start, self.board_width_end)
@@ -70,8 +70,10 @@ class Game:
             for j in range(i+1, len(self.snake.body)):
                 if self.snake.body[i] == self.snake.body[j]:
                     self.playing = False
-                    print("Game over!")
-                    return
+                    self.stdscr.clear()
+                    self.stdscr.addstr(int(self.terminal_height * 0.9), int(self.terminal_width / 2), "You Lost!", curses.A_UNDERLINE)
+
+                    return True
                 
     def eat_apple(self) -> bool:
         if self.snake.head() == self.apple.position():
@@ -83,29 +85,30 @@ class Game:
         
         return False
 
-    def render(self, stdscr):
+    def render(self):
         self.playing = True
-        stdscr.nodelay(True)  # Non-blocking input
-        stdscr.keypad(True)  # Enable arrow key input
+        self.stdscr.timeout(10)  # Non-blocking input
+        self.stdscr.keypad(True)  # Enable arrow key input
         curses.curs_set(0)  # Hide cursor
 
         while self.playing:
-            stdscr.clear()  
+            self.stdscr.clear()  
             self.display_board()  
             self.display_score()
             self.snake.generate()  
             self.apple.generate([body["position"] for body in self.snake.body])
 
-            key = stdscr.getch()  # Get user input
+            key = self.stdscr.getch()  # Get user input
             self.handle_user_input(key) # handle user input
             
             self.snake.move()  # Move the snake
-            self.snake_collision()
+            if (self.snake_collision()):
+                 return
             self.eat_apple()
 
-            stdscr.refresh()  # Refresh screen
+            self.stdscr.refresh()  # Refresh screen
             curses.napms(100)  # Delay to slow down animation
 
-        stdscr.nodelay(False)  # Reset blocking input when game stops
+        self.stdscr.nodelay(False)  # Reset blocking input when game stops
 
 

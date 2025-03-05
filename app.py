@@ -13,7 +13,6 @@ def main(stdscr: curses.window):
     height,width = stdscr.getmaxyx()
 
     menu = Menu(height, width, stdscr)
-    game = Game(height, width, stdscr)
 
     while True:
         menu.displayMenu()
@@ -21,7 +20,8 @@ def main(stdscr: curses.window):
 
         choice = stdscr.getch()  # Get user input
         if choice == KEY_1:
-            game.render(stdscr)
+            game = Game(height, width, stdscr)
+            game.render()
         elif choice == KEY_2:
             clear_screen(stdscr)
             stdscr.refresh()
@@ -30,7 +30,7 @@ def main(stdscr: curses.window):
         elif choice == KEY_3:
             break
         else:
-            stdscr.addstr(int(height * 0.9), int(width / 2), "Choose a valid option!", curses.A_UNDERLINE)
+            stdscr.addstr(int(height * 0.7), int(width / 2), "Choose a valid option!", curses.A_UNDERLINE)
 
 
 if __name__ == "__main__":
