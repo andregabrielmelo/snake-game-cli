@@ -9,5 +9,5 @@ def prompt_user(stdscr: curses.window, y: int, x: int, text: str, key: int) -> b
     
     return True
 
-def clear_screen(stdscr):
+def clear_screen(stdscr) -> None:
     stdscr.clear()    
