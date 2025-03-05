@@ -63,7 +63,7 @@ class Game:
             self.playing = False
             self.stdscr.clear()
                         
-    def valid_position(self):
+    def snake_collision(self):
         """Verify if the snake is in a valid position"""
 
         for i in range(len(self.snake.body)):
@@ -99,8 +99,9 @@ class Game:
             key = stdscr.getch()  # Get user input
             self.handle_user_input(key) # handle user input
             
-            self.eat_apple()
             self.snake.move()  # Move the snake
+            self.snake_collision()
+            self.eat_apple()
 
             stdscr.refresh()  # Refresh screen
             curses.napms(100)  # Delay to slow down animation

@@ -13,28 +13,17 @@ class Snake:
         self.previousDirection: str = "UP"
 
     def create_snake(self) -> list[dict[tuple, str]]:
-        """Generate a random snake body"""
+        """Generate a snake starting at a safe position inside the board."""
+        x = random.randint(self.board_width_start + 1, self.board_width_end - 1)
+        y = random.randint(self.board_height_start + 4, self.board_height_end - 1)  # Ensure enough space
 
-        x: int = random.randint(self.board_width_start+1, self.board_width_end-1) # Pick random x point within board
-        y: int = random.randint(self.board_height_start+1, self.board_height_end-1) # Pick random y point withing board
         return [
-            {
-                "position": (x, y),
-                "direction": "UP"
-            },
-            {
-                "position": (x, y+1),
-                "direction": "UP"
-            },
-            {
-                "position": (x, y+2),
-                "direction": "UP"
-            },
-            {
-                "position": (x, y+3),
-                "direction": "UP"
-            },
+            {"position": (x, y), "direction": "UP"},
+            {"position": (x, y - 1), "direction": "UP"},
+            {"position": (x, y - 2), "direction": "UP"},
+            {"position": (x, y - 3), "direction": "UP"},
         ]
+
     
     def generate(self) -> None:
         """Display snake body"""        
