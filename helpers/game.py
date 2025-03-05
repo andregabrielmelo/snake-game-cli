@@ -77,7 +77,7 @@ class Game:
         if self.snake.head() == self.apple.position():
             self.score += 1
             self.apple.counter -= 1
-            self.apple.generate()
+            self.apple.generate([body["position"] for body in self.snake.body])
             self.snake.grow()
             return True
         
@@ -94,7 +94,7 @@ class Game:
             self.display_board()  
             self.display_score()
             self.snake.generate()  
-            self.apple.generate()
+            self.apple.generate([body["position"] for body in self.snake.body])
 
             key = stdscr.getch()  # Get user input
             self.handle_user_input(key) # handle user input
