@@ -6,14 +6,14 @@ class Game:
     def __init__(self, terminal_height, terminal_width, stdscr): 
         self.terminal_height: int = terminal_height
         self.terminal_width: int = terminal_width
-        self.board_height_start: int = int(terminal_height*0.25)
-        self.board_height_end: int = int(terminal_height*0.75)
-        self.board_width_start: int = int(terminal_width*0.25)
-        self.board_width_end: int = int(terminal_width*0.75)
+        self.board_height_start: int = 1
+        self.board_height_end: int = int(terminal_height)-1
+        self.board_width_start: int = 1
+        self.board_width_end: int = int(terminal_width*0.8)
         self.stdscr = stdscr
         self.score = 0
-        self.snake = Snake(stdscr,  terminal_height*0.25,  terminal_height*0.75, terminal_width*0.25, terminal_width*0.75)
-        self.apple = Apple(stdscr, terminal_height*0.25,  terminal_height*0.75, terminal_width*0.25, terminal_width*0.75)
+        self.snake = Snake(stdscr,  self.board_height_start,  self.board_height_end, self.board_width_start, self.board_width_end)
+        self.apple = Apple(stdscr, self.board_height_start,  self.board_height_end, self.board_width_start, self.board_width_end)
     
     def display_board(self):
         """Function that displays the board of the game"""
@@ -45,7 +45,8 @@ class Game:
                     self.stdscr.addstr(y,x,"│")
 
     def display_score(self):
-        self.stdscr.addstr(int(self.terminal_height*0.9),self.board_width_start, f"Score: {self.score}")
+        self.stdscr.addstr(self.board_height_start,int(self.board_width_end*1.05), f"Score: {self.score}")
+        ...
 
     def handle_user_input(self, key: int) -> bool:
         """Handle movement keys"""
