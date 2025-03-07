@@ -3,13 +3,15 @@ from helpers.apple import Apple
 import curses
 
 class Game:
-    def __init__(self, terminal_height, terminal_width, stdscr: curses.window): 
+    def __init__(self, terminal_height, terminal_width, board_height_start: int, board_height_end: int, board_width_start: int, board_width_end: int, stdscr: curses.window): 
         self.terminal_height: int = terminal_height
         self.terminal_width: int = terminal_width
-        self.board_height_start: int = 1
-        self.board_height_end: int = int(terminal_height)-1
-        self.board_width_start: int = 1
-        self.board_width_end: int = int(terminal_width*0.8)
+
+        self.board_height_start: int = int(board_height_start)
+        self.board_height_end: int = int(board_height_end)
+        self.board_width_start: int = int(board_width_start)
+        self.board_width_end: int = int(board_width_end)
+
         self.stdscr: curses.window = stdscr
         self.score = 0
         self.snake = Snake(stdscr,  self.board_height_start,  self.board_height_end, self.board_width_start, self.board_width_end)

@@ -4,8 +4,14 @@ from helpers.functions import prompt_user
 KEY_ENTER = 10
 
 class Menu:
-    def __init__(self, terminal_height, terminal_width, stdscr):
+    def __init__(self, terminal_height, terminal_width, board_height_start: int, board_height_end: int, board_width_start: int, board_width_end: int, stdscr):
         self.stdscr = stdscr
+
+        self.board_height_start: int = int(board_height_start)
+        self.board_height_end: int = int(board_height_end)
+        self.board_width_start: int = int(board_width_start)
+        self.board_width_end: int = int(board_width_end)
+
         self.terminal_height = terminal_height
         self.terminal_width = terminal_width
         
@@ -33,7 +39,7 @@ class Menu:
 
         # display menu itmes
         for i in range(len(menu_items)):
-            self.stdscr.addstr(int(self.terminal_height*0.2+self.terminal_height*i/10), int(self.terminal_width*0.85), menu_items[i]["display"], menu_items[i]["option"])
+            self.stdscr.addstr(int(self.terminal_height*0.2+self.terminal_height*i/10), int(self.board_width_end*1.05), menu_items[i]["display"], menu_items[i]["option"])
 
     def showInstructions(self) -> None:
         """Show instructions items"""

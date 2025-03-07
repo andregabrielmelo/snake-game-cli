@@ -3,10 +3,12 @@ import random, curses
 class Snake:
     def __init__(self, stdscr: curses.window, board_height_start: int, board_height_end: int, board_width_start: int, board_width_end: int, direction: str = "UP"):
         self.stdscr: curses.window = stdscr
+
         self.board_height_start: int = int(board_height_start)
         self.board_height_end: int = int(board_height_end)
         self.board_width_start: int = int(board_width_start)
         self.board_width_end: int = int(board_width_end)
+        
         self.direction: str = direction
         self.body: list[dict[tuple, str]] = self.create_snake()
         self.direction: str = "UP"
